@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+
+<configuration>
+	<substitutionProperty name="log.base" value="${athene.log.dir}/hitian" />
+	<jmxConfigurator />
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+
+		<layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS}  %highlight(%-5level) --- [%32.32thread]  %cyan(%-40.40logger{40}) : %msg%n</pattern>
+            <charset>utf8</charset>
+		</layout>
+	</appender>
+
+	<appender name="logfile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<Encoding>UTF-8</Encoding>
+		<File>${log.base}.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.base}.%d{yyyy-MM-dd}.log.zip</FileNamePattern>
+			<maxHistory>15</maxHistory>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS}  %highlight(%-5level) --- [%32.32thread]  %cyan(%-80.80logger{80}) : %msg%n</pattern>
+		</layout>
+	</appender>
+
+	<logger name="org.springframework" level="DEBUG" />
+	<logger name="com.jc" level="DEBUG" />
+	<root>
+		<level value="DEBUG" />
+		<appender-ref ref="stdout" />
+        <appender-ref ref="logfile" />
+	</root>
+</configuration>
+

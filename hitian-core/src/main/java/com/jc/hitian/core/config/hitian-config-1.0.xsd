@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns="http://www.jc.com/schema/config"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:tool="http://www.springframework.org/schema/tool"
+			targetNamespace="http://www.jc.com/schema/config"
+		elementFormDefault="qualified"
+		attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/context" schemaLocation="http://www.springframework.org/schema/context/spring-context-3.2.xsd"/>
+    <xsd:import namespace="http://www.springframework.org/schema/tool" schemaLocation="http://www.springframework.org/schema/tool/spring-tool-3.2.xsd"/>
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+	Defines the configuration elements for the Spring Framework's application
+	context support. Effects the activation of various configuration styles
+	for the containing Spring ApplicationContext.
+		]]></xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:complexType name="propertyPlaceholder">
+		<xsd:attribute name="type" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+	The location of the properties file to resolve placeholders against, as a Spring
+	resource location: a URL, a "classpath:" pseudo URL, or a relative file path.
+	Multiple locations may be specified, separated by commas. If neither location nor
+	properties-ref is specified, placeholders will be resolved against system properties.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="context" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation source="java:java.util.Properties"><![CDATA[
+	The bean name of a Properties object that will be used for property substitution.
+	If neither location nor properties-ref is specified, placeholders will be resolved
+	against system properties.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="ignore-resource-not-found" type="xsd:boolean" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+	Specifies if failure to find the property resource location should be ignored.
+	Default is "false", meaning that if there is no file in the location specified
+	an exception will be raised at runtime.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="ignore-unresolvable" type="xsd:boolean" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+	Specifies if failure to find the property value to replace a key should be ignored.
+	Default is "false", meaning that this placeholder configurer will raise an exception
+	if it cannot resolve a key. Set to "true" to allow the configurer to pass on the key
+	to any others in the context that have not yet visited the key in question.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="local-override" type="xsd:boolean" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+	Specifies whether local properties override properties from files.
+	Default is "false": Properties from files override local defaults.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:element name="property-placeholder">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+	Activates replacement of ${...} placeholders by registering a
+	PropertySourcesPlaceholderConfigurer within the application context. Properties will
+	be resolved against the specified properties file or Properties object -- so called
+	"local properties", if any, and against the Spring Environment's current set of
+	PropertySources.
+
+	Note that as of Spring 3.1 the system-properties-mode attribute has been removed in
+	favor of the more flexible PropertySources mechanism. However, Spring 3.1-based
+	applications may continue to use the 3.0 (and older) versions of the spring-context
+	schema in order to preserve system-properties-mode behavior. In this case, the
+	traditional PropertyPlaceholderConfigurer component will be registered instead of the
+	new PropertySourcesPlaceholderConfigurer.
+
+	See ConfigurableEnvironment javadoc for more information on using.
+			]]></xsd:documentation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="com.jc.hitian.core.config.RemotePlaceholderConfigurerSupport"/>
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="propertyPlaceholder">
+					<xsd:attribute name="system-properties-mode" default="ENVIRONMENT">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+	Controls how to resolve placeholders against system properties. As of Spring 3.1, this
+	attribute value defaults to "ENVIRONMENT", indicating that resolution of placeholders
+	against system properties is handled via PropertySourcesPlaceholderConfigurer and its
+	delegation to the current Spring Environment object.
+
+	For maximum backward compatibility, this attribute is preserved going forward with the
+	3.1 version of the context schema, and any values other than the default "ENVIRONMENT"
+	will cause a traditional PropertyPlaceholderConfigurer to be registered instead of the
+	newer PropertySourcesPlaceholderConfigurer variant. In this case, the Spring Environment
+	and its property sources are not interrogated when resolving placeholders. Users are
+	encouraged to consider this attribute deprecated, and to take advantage of
+	Environment/PropertySource mechanisms. See ConfigurableEnvironment javadoc for examples.
+
+	"ENVIRONMENT" indicates placeholders should be resolved against the current Environment and against any local properties;
+	"NEVER" indicates placeholders should be resolved only against local properties and never against system properties;
+	"FALLBACK" indicates placeholders should be resolved against any local properties and then against system properties;
+	"OVERRIDE" indicates placeholders should be resolved first against system properties and then against any local properties;
+							]]></xsd:documentation>
+						</xsd:annotation>
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:enumeration value="ENVIRONMENT"/>
+								<xsd:enumeration value="NEVER"/>
+								<xsd:enumeration value="FALLBACK"/>
+								<xsd:enumeration value="OVERRIDE"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>
